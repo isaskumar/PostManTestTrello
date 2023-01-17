@@ -1,0 +1,342 @@
+{
+	"info": {
+		"_postman_id": "afa7a732-c00b-42fc-90eb-77e03e5b264a",
+		"name": "Trello API Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23410770"
+	},
+	"item": [
+		{
+			"name": "Create a board",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const boardName = \"TA_\" + parseInt(Math.random() * 10000)\r",
+							"pm.environment.set(\"board_name\", boardName)\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();\r",
+							"pm.environment.set(\"idboard\", responseData.id);\r",
+							"\r",
+							"//assertion for status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/boards/?name={{board_name}}&key={{Key}}&token={{token}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"boards",
+						""
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "{{board_name}}"
+						},
+						{
+							"key": "key",
+							"value": "{{Key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a list on a board",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"count\", 3);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();\r",
+							"pm.environment.set(\"idBoard\", responseData.idBoard);\r",
+							"pm.environment.set(\"id\", responseData.id);\r",
+							"\r",
+							"//assertion for status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/boards/{{idboard}}/lists?name={{$randomJobTitle}}&key={{Key}}&token={{token}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"boards",
+						"{{idboard}}",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "{{$randomJobTitle}}"
+						},
+						{
+							"key": "key",
+							"value": "{{Key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add card to board",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const cardName = \"Test\" + parseInt(Math.random() * 1000)\r",
+							"pm.environment.set(\"card_name\", cardName)\r",
+							"\r",
+							"var currentCount = pm.environment.get(\"count\")\r",
+							"if (currentCount > 0){\r",
+							" currentCount = currentCount -1 ;\r",
+							" pm.environment.set(\"count\", currentCount);\r",
+							" postman.setNextRequest(\"Add card to board\");\r",
+							"};\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();\r",
+							"pm.environment.set(\"idBoard\", responseData.idBoard);\r",
+							"pm.environment.set(\"idList\", responseData.idList);\r",
+							"\r",
+							"pm.environment.set(\"cardID\", responseData.id);\r",
+							"\r",
+							"//assertion for status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{card_name}}\",\r\n    \"idBoard\": \"{{idBoard}}\",\r\n    \"idList\": \"{{id}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/cards?key={{Key}}&token={{token}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"cards"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{Key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit card",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();\r",
+							"pm.environment.set(\"CardID\", responseData.id);\r",
+							"\r",
+							"//assertion for status code\r",
+							"\r",
+							"//assertion for status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{card_name}}\",\r\n    \"desc\": \"test data\",\r\n    \"idBoard\": \"{{idBoard}}\",\r\n    \"idList\": \"{{idList}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/cards/{{cardID}}?key={{Key}}&token={{token}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"cards",
+						"{{cardID}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{Key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete card from board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//assertion for status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/cards/{{CardID}}?key={{Key}}&token={{token}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"cards",
+						"{{CardID}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{Key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{token}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "idboard",
+			"value": "{{idboard}}"
+		},
+		{
+			"key": "cardID",
+			"value": "{{cardID}}"
+		},
+		{
+			"key": "CardID",
+			"value": "{{CardID}}"
+		},
+		{
+			"key": "API_KEY",
+			"value": "{{API_KEY}}"
+		},
+		{
+			"key": "API_Token",
+			"value": "{{API_Token}}"
+		},
+		{
+			"key": "Key",
+			"value": "a2402197a4ec815b76fc20b76d1ece69"
+		},
+		{
+			"key": "token",
+			"value": "ATTA8f7343122377e8379171fb65d47aa54845b8efa8049d9d10eb881a4648a2d4f9356E9C52"
+		}
+	]
+}
